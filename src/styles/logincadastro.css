@@ -1,0 +1,106 @@
+/* Estilos globais */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    height: 100%;
+     
+}
+
+.App {
+    display: flex;
+    height: 100vh;
+    background-color: #314263;
+}
+
+.gif {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gif img {
+    max-width: 100%;
+    height: auto; 
+}
+
+.main {
+    flex: 1;
+    padding: 1.7em;
+    max-width: 500px; 
+    margin: auto;
+    background-color: #314263;
+}
+
+.main-container-login,
+.main-container-registro {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    font-family: "Poetsen One";
+    font-weight: 400;
+    font-style: normal;
+}
+
+.main-container-login input,
+.main-container-registro input,
+.main-container-registro select,
+.main-container-registro textarea {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.main-container-login button,
+.main-container-registro button {
+    padding: 0.5rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.main-container-login button:hover,
+.main-container-registro button:hover {
+    background-color: #9D4E2D;
+}
+
+.main-container-login p,
+.main-container-registro p {
+    text-align: center;
+    margin-top: 1rem;
+    color: white;
+}
+
+.main-container-login span,
+.main-container-registro span {
+    color: #007BFF;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.main-container-login input[type="password"],
+.main-container-registro input[type="password"] {
+    -webkit-text-security: disc;
+    -moz-text-security: disc;
+    text-security: disc;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .App {
+        flex-direction: column;
+    }
+    .gif, .main {
+        flex: none;
+        width: 100%;
+    }
+}
+
+

@@ -1,0 +1,171 @@
+/* Estilos globais */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #F5EEDA;
+}
+
+/* Container principal */
+.container-home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+/* Cabeçalho */
+.header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: "Poetsen One";
+}
+
+/* Parágrafo de boas-vindas */
+.container-home p {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+}
+
+/* Botão de postagem */
+.btn-post {
+    padding: 0.5rem 1rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 1.5rem;
+}
+
+.btn-post:hover {
+    background-color: #0056b3;
+}
+
+/* Modal de publicação */
+.modal-publicar {
+    width: 100%;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-publicar form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-publicar label {
+    margin-top: 1rem;
+}
+
+.modal-publicar input[type="text"],
+.modal-publicar textarea {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.modal-publicar textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.modal-publicar progress {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.modal-publicar button {
+    padding: 0.5rem;
+    margin-top: 1rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-publicar button:hover {
+    background-color: #0056b3;
+}
+
+.modal-publicar button[type="button"] {
+    background-color: #dc3545;
+}
+
+.modal-publicar button[type="button"]:hover {
+    background-color: #c82333;
+}
+
+.navbar{
+    background-color: #5C77A8;
+    position: fixed;
+    margin-right: 78.9em;
+    padding: 40px;
+}
+
+.nav-link{
+    color: white;
+    margin-right: 25px;
+}
+
+#btn-pub{
+    background-color: #26282C;
+    border-radius: 45px;
+    margin-bottom: 10em;
+    margin-left: 25px;
+}
+#btn-chat{
+    background-color:#DE995A;
+    border-radius: 45px;
+    margin-top: 27em;
+    margin-left: 25px;
+}
+/* Responsividade */
+@media (max-width: 768px) {
+    .container-home {
+        padding: 1rem;
+    }
+
+    .btn-post {
+        width: 100%;
+    }
+}
+
+.comments-section {
+    margin-top: 1em;
+    border-top: 1px solid #ccc;
+    padding-top: 1em;
+}
+
+.comments-list {
+    margin-top: 1em;
+}
+
+.comment {
+    padding: 0.5em 0;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-photo {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+}
