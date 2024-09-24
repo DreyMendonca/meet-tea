@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, storage, db } from '../firebase.js';
 import { ToastContainer, toast } from 'react-toastify';
@@ -17,7 +17,26 @@ const LoginRegistro = (props) => {
     const [aceitouTermos, setAceitouTermos] = useState(false);
     const [showResetPassword, setShowResetPassword] = useState(false);
     const [resetEmail, setResetEmail] = useState("");
+    const [user, setUser] = useState(null);  // Estado para armazenar o usuário autenticado
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Verifica o estado de autenticação do usuário
+        const unsubscribe = auth.onAuthStateChanged((authUser) => {
+            if (authUser) {
+                setUser(authUser);
+                props.setUser(authUser.displayName);
+                localStorage.setItem('user', JSON.stringify(authUser));  // Armazena as informações do usuário localmente
+                navigate('/home');
+            } else {
+                setUser(null);
+                localStorage.removeItem('user');  // Remove as informações do usuário quando ele desloga
+            }
+        });
+
+        // Retorna a função de limpeza para cancelar o listener quando o componente for desmontado
+        return () => unsubscribe();
+    }, [navigate, props]);
 
     const calcularIdade = (birthDate) => {
         const hoje = new Date();
@@ -25,7 +44,6 @@ const LoginRegistro = (props) => {
         let idade = hoje.getFullYear() - nascimento.getFullYear();
         const mes = hoje.getMonth() - nascimento.getMonth();
 
-        // Verifica se o aniversário ainda não aconteceu neste ano
         if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
             idade--;
         }
@@ -41,7 +59,6 @@ const LoginRegistro = (props) => {
             return;
         }
 
-        // Certifique-se de que os elementos DOM estão disponíveis antes de tentar acessar seus valores
         const birthdateElement = document.getElementById("birthdate-cadastro");
         const emailElement = document.getElementById("email-cadastro");
         const passwordElement = document.getElementById("password-cadastro");
@@ -50,17 +67,10 @@ const LoginRegistro = (props) => {
         const phoneElement = document.getElementById("phone-cadastro");
         const addressElement = document.getElementById("address-cadastro");
         const fileElement = document.getElementById("file-cadastro");
-        const profilePhotoElement = document.getElementById("profile-photo-cadastro");
-
-        if (!birthdateElement || !emailElement || !passwordElement || !userNameElement || !genderElement || !phoneElement || !addressElement || !fileElement) {
-            toast.error("Há campos faltando no formulário de cadastro.");
-            return;
-        }
 
         let birthDate = birthdateElement.value;
         let idade = calcularIdade(birthDate);
 
-        // Verifica se o usuário é maior de idade (18 anos ou mais)
         if (idade < 18) {
             toast.error('Você precisa ser maior de idade para criar uma conta.');
             return;
@@ -73,7 +83,6 @@ const LoginRegistro = (props) => {
         let phone = phoneElement.value;
         let address = addressElement.value;
         let selectedFile = fileElement.files[0];
-        let profilePhoto = profilePhotoElement ? profilePhotoElement.files[0] : null;
 
         try {
             const authUser = await auth.createUserWithEmailAndPassword(email, password);
@@ -84,23 +93,13 @@ const LoginRegistro = (props) => {
             });
 
             let fileURL = '';
-            let profilePhotoURL = '';
 
             if (selectedFile) {
                 const fileRef = storage.ref().child(`user_files/${authUser.user.uid}/${selectedFile.name}`);
                 await fileRef.put(selectedFile);
                 fileURL = await fileRef.getDownloadURL();
-                console.log('Arquivo enviado com sucesso! URL:', fileURL);
             }
 
-            if (profilePhoto) {
-                const profilePhotoRef = storage.ref().child(`user_profile_photos/${authUser.user.uid}/${profilePhoto.name}`);
-                await profilePhotoRef.put(profilePhoto);
-                profilePhotoURL = await profilePhotoRef.getDownloadURL();
-                console.log('Foto do perfil enviada com sucesso! URL:', profilePhotoURL);
-            }
-
-            // Salvando as novas informações do usuário no Firestore
             await db.collection('users').doc(authUser.user.uid).set({
                 email: authUser.user.email,
                 displayName: userName,
@@ -108,10 +107,8 @@ const LoginRegistro = (props) => {
                 gender,
                 phone,
                 address,
-                about: '', // Aqui pode adicionar o campo "about" se quiser
                 fileURL,
                 idade,
-                profilePhotoURL,
             });
 
         } catch (error) {
@@ -137,6 +134,7 @@ const LoginRegistro = (props) => {
 
             props.setUser(authResult.user.displayName);
             toast.success('Logado com Sucesso!');
+            localStorage.setItem('user', JSON.stringify(authResult.user));  // Armazena as informações do usuário localmente
             navigate('/home');
         } catch (error) {
             toast.error('Erro ao logar: ' + error.message);
@@ -190,37 +188,31 @@ const LoginRegistro = (props) => {
                         <input type="text" id="address-cadastro" placeholder="Endereço" />
                         <label>Carteira CIPTEA</label>
                         <input type="file" id="file-cadastro" required />
-                        {/* <label>Foto de perfil</label>
-                        <input type="file" id="profile-photo-cadastro" /> */}
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <input style={{ width: '10px', marginRight: '20px' }}
                                 type="checkbox"
                                 id="aceitou-termos"
                                 checked={aceitouTermos}
-                                onChange={(e) => setAceitouTermos(e.target.checked)}
-                            />
-                            <label htmlFor="aceitou-termos">Aceitar os Termos</label>
+                                onChange={(e) => setAceitouTermos(e.target.checked)} />
+                            <label htmlFor="aceitou-termos" style={{ fontSize: '14px' }}>Eu aceito os termos e condições do Meet Tea</label>
                         </div>
-                        <button onClick={(e) => criarConta(e)}>Registrar</button>
+                        <button onClick={(e) => criarConta(e)}>Registrar-se</button>
                         <p>Já tem uma Conta? <span onClick={() => setContainerLogar(!containerLogar)}>Iniciar Sessão</span></p>
                     </div>
                 }
+
+                {showResetPassword && (
+                    <div className="reset-password-modal">
+                        <div className="reset-password-content">
+                            <h3>Redefinir senha</h3>
+                            <input type="email" placeholder="Digite seu e-mail" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
+                            <button onClick={enviarEmailRedefinicaoSenha}>Enviar E-mail</button>
+                            <button onClick={() => setShowResetPassword(false)}>Cancelar</button>
+                        </div>
+                    </div>
+                )}
+
             </div>
-
-            {showResetPassword &&
-                <div className="reset-password-modal">
-                    <h2>Redefinir Senha</h2>
-                    <input
-                        type="email"
-                        placeholder="Insira o seu email"
-                        value={resetEmail}
-                        onChange={(e) => setResetEmail(e.target.value)}
-                    />
-                    <button onClick={enviarEmailRedefinicaoSenha}>Enviar Email de Redefinição</button>
-                    <button onClick={() => setShowResetPassword(false)}>Cancelar</button>
-                </div>
-            }
-
             <ToastContainer />
         </div>
     );
