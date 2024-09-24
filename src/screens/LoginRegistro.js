@@ -194,7 +194,9 @@ const LoginRegistro = (props) => {
                                 id="aceitou-termos"
                                 checked={aceitouTermos}
                                 onChange={(e) => setAceitouTermos(e.target.checked)} />
-                            <label htmlFor="aceitou-termos" style={{ fontSize: '14px' }}>Eu aceito os termos e condições do Meet Tea</label>
+                            <label htmlFor="aceitou-termos" style={{marginBottom: '10px'}}>
+                                Ao submeter esse formulário, declaro que li e entendi que o tratamento de dados pessoais será realizado nos termos de <a href="/termos-privacidade">Política de Privacidade </a> Meet TEA
+                            </label>
                         </div>
                         <button onClick={(e) => criarConta(e)}>Registrar-se</button>
                         <p>Já tem uma Conta? <span onClick={() => setContainerLogar(!containerLogar)}>Iniciar Sessão</span></p>
