@@ -5,6 +5,7 @@ import '../styles/Home.css';
 import IconSoloMeetTEA from '../icons/icon-solo-meet-tea.png';
 import '@fontsource/poetsen-one';
 
+
 const Home = (props) => {
     const [openModalPublicar, setOpenModalPublicar] = useState(false);
     const [openModalVisualizar, setOpenModalVisualizar] = useState(false);
