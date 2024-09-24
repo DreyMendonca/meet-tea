@@ -32,33 +32,48 @@ const LoginRegistro = (props) => {
 
         return idade;
     };
-    
+
     const criarConta = async (e) => {
         e.preventDefault();
-    
+
         if (!aceitouTermos) {
             toast.error('Você precisa aceitar os termos para criar uma conta.');
             return;
         }
-    
-        let birthDate = document.getElementById("birthdate-cadastro").value;
+
+        // Certifique-se de que os elementos DOM estão disponíveis antes de tentar acessar seus valores
+        const birthdateElement = document.getElementById("birthdate-cadastro");
+        const emailElement = document.getElementById("email-cadastro");
+        const passwordElement = document.getElementById("password-cadastro");
+        const userNameElement = document.getElementById("userName-cadastro");
+        const genderElement = document.getElementById("gender-cadastro");
+        const phoneElement = document.getElementById("phone-cadastro");
+        const addressElement = document.getElementById("address-cadastro");
+        const fileElement = document.getElementById("file-cadastro");
+        const profilePhotoElement = document.getElementById("profile-photo-cadastro");
+
+        if (!birthdateElement || !emailElement || !passwordElement || !userNameElement || !genderElement || !phoneElement || !addressElement || !fileElement) {
+            toast.error("Há campos faltando no formulário de cadastro.");
+            return;
+        }
+
+        let birthDate = birthdateElement.value;
         let idade = calcularIdade(birthDate);
-    
+
         // Verifica se o usuário é maior de idade (18 anos ou mais)
         if (idade < 18) {
             toast.error('Você precisa ser maior de idade para criar uma conta.');
             return;
         }
 
-        let email = document.getElementById("email-cadastro").value;
-        let password = document.getElementById("password-cadastro").value;
-        let userName = document.getElementById("userName-cadastro").value;
-        let gender = document.getElementById("gender-cadastro").value;
-        let phone = document.getElementById("phone-cadastro").value;
-        let address = document.getElementById("address-cadastro").value;
-        let about = document.getElementById("about-cadastro").value;
-        let selectedFile = document.getElementById("file-cadastro").files[0];
-        let profilePhoto = document.getElementById("profile-photo-cadastro").files[0]; // Novo campo
+        let email = emailElement.value;
+        let password = passwordElement.value;
+        let userName = userNameElement.value;
+        let gender = genderElement.value;
+        let phone = phoneElement.value;
+        let address = addressElement.value;
+        let selectedFile = fileElement.files[0];
+        let profilePhoto = profilePhotoElement ? profilePhotoElement.files[0] : null;
 
         try {
             const authUser = await auth.createUserWithEmailAndPassword(email, password);
@@ -93,17 +108,16 @@ const LoginRegistro = (props) => {
                 gender,
                 phone,
                 address,
-                about,
+                about: '', // Aqui pode adicionar o campo "about" se quiser
                 fileURL,
-                birthDate,
                 idade,
-                profilePhotoURL, // Adicionando a URL da foto do perfil no banco de dados
+                profilePhotoURL,
             });
 
         } catch (error) {
             toast.error('Erro ao criar uma conta: ' + error.message);
         }
-    }
+    };
 
     const logar = async (e) => {
         e.preventDefault();
@@ -127,7 +141,7 @@ const LoginRegistro = (props) => {
         } catch (error) {
             toast.error('Erro ao logar: ' + error.message);
         }
-    }
+    };
 
     const enviarEmailRedefinicaoSenha = (e) => {
         e.preventDefault();
@@ -138,7 +152,7 @@ const LoginRegistro = (props) => {
                 setShowResetPassword(false);
             })
             .catch((error) => toast.error('Erro ao enviar e-mail de redefinição de senha: ' + error.message));
-    }
+    };
 
     return (
         <div className="App">
@@ -162,10 +176,10 @@ const LoginRegistro = (props) => {
                         <h1 style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <img src={IconSoloMeetTEA} width={40} style={{ margin: '0 10px' }} />MEET TEA <img src={IconSoloMeetTEA} width={40} style={{ margin: '0 10px' }} />
                         </h1>
-                        <input type="text" id="userName-cadastro" placeholder="Nome de usuário" required/>
-                        <input type="email" placeholder="User@gmail.com" id="email-cadastro" required/>
-                        <input type="password" id="password-cadastro" placeholder="Senha" required/>
-                        <input type="date" id="birthdate-cadastro" placeholder="Data de Nascimento" required/>
+                        <input type="text" id="userName-cadastro" placeholder="Nome de usuário" required />
+                        <input type="email" placeholder="User@gmail.com" id="email-cadastro" required />
+                        <input type="password" id="password-cadastro" placeholder="Senha" required />
+                        <input type="date" id="birthdate-cadastro" placeholder="Data de Nascimento" required />
                         <select id="gender-cadastro" required>
                             <option value="">Selecione o Sexo</option>
                             <option value="Masculino">Masculino</option>
@@ -174,211 +188,42 @@ const LoginRegistro = (props) => {
                         </select>
                         <input type="text" id="phone-cadastro" placeholder="Telefone" />
                         <input type="text" id="address-cadastro" placeholder="Endereço" />
-                        {/* <textarea id="about-cadastro" placeholder="Sobre mim"></textarea> */}
                         <label>Carteira CIPTEA</label>
-                        <input type="file" id="file-cadastro" required/>
+                        <input type="file" id="file-cadastro" required />
                         {/* <label>Foto de perfil</label>
-                        <input type="file" id="profile-photo-cadastro" /> Novo campo */}
+                        <input type="file" id="profile-photo-cadastro" /> */}
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <input style={{width: '10px' ,marginRight: '20px'}}
+                            <input style={{ width: '10px', marginRight: '20px' }}
                                 type="checkbox"
                                 id="aceitou-termos"
                                 checked={aceitouTermos}
                                 onChange={(e) => setAceitouTermos(e.target.checked)}
                             />
-
-                           
-                            <label htmlFor="aceitou-termos" style={{marginBottom: '10px'}}>
-                                Ao submeter esse formulário, declaro que li e entendi que o tratamento de dados pessoais será realizado nos termos de <a href="/termos-privacidade">Política de Privacidade </a> Meet TEA
-                            </label>
+                            <label htmlFor="aceitou-termos">Aceitar os Termos</label>
                         </div>
-                        <button onClick={(e) => criarConta(e)}>Registrar-se</button>
-                        <p>Já tem uma Conta? <span onClick={() => setContainerLogar(!containerLogar)}>Logar-se</span></p>
+                        <button onClick={(e) => criarConta(e)}>Registrar</button>
+                        <p>Já tem uma Conta? <span onClick={() => setContainerLogar(!containerLogar)}>Iniciar Sessão</span></p>
                     </div>
-                    
                 }
-               
-
-                {showResetPassword && (
-                    <div className="reset-password-modal">
-                        <div className="reset-password-content">
-                            <h2>Redefinir Senha</h2>
-                            <input
-                                type="email"
-                                placeholder="Digite seu e-mail"
-                                value={resetEmail}
-                                onChange={(e) => setResetEmail(e.target.value)}
-                            />
-                            <button onClick={(e) => enviarEmailRedefinicaoSenha(e)}>Enviar E-mail de Redefinição</button>
-                            <button onClick={() => setShowResetPassword(false)}>Fechar</button>
-                        </div>
-                    </div>
-                )}
             </div>
+
+            {showResetPassword &&
+                <div className="reset-password-modal">
+                    <h2>Redefinir Senha</h2>
+                    <input
+                        type="email"
+                        placeholder="Insira o seu email"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                    />
+                    <button onClick={enviarEmailRedefinicaoSenha}>Enviar Email de Redefinição</button>
+                    <button onClick={() => setShowResetPassword(false)}>Cancelar</button>
+                </div>
+            }
+
             <ToastContainer />
         </div>
-    )
-}
+    );
+};
 
 export default LoginRegistro;
-
-
-
-
-
-// CASO PRECISE DO CODE ANTIGO....:
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { auth, storage, db } from '../firebase.js';
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
-
-// import '../styles/logincadastro.css';
-// import IconSoloMeetTEA from '../icons/icon-solo-meet-tea.png';
-
-// const LoginRegistro = (props) => {
-//     const [containerLogar, setContainerLogar] = useState(true);
-//     const [aceitouTermos, setAceitouTermos] = useState(false);
-//     const [showResetPassword, setShowResetPassword] = useState(false);
-//     const [resetEmail, setResetEmail] = useState("");
-//     const navigate = useNavigate();
-
-//     const criarConta = async (e) => {
-//         e.preventDefault();
-
-//         if (!aceitouTermos) {
-//             toast.error('Você precisa aceitar os termos para criar uma conta.');
-//             return;
-//         }
-
-//         let email = document.getElementById("email-cadastro").value;
-//         let password = document.getElementById("password-cadastro").value;
-//         let userName = document.getElementById("userName-cadastro").value;
-//         let selectedFile = document.getElementById("file-cadastro").files[0];
-
-//         try {
-//             const authUser = await auth.createUserWithEmailAndPassword(email, password);
-//             toast.success("Conta criada com Sucesso!");
-
-//             await authUser.user.updateProfile({
-//                 displayName: userName
-//             });
-
-//             let fileURL = '';
-
-//             if (selectedFile) {
-//                 const fileRef = storage.ref().child(`user_files/${authUser.user.uid}/${selectedFile.name}`);
-//                 await fileRef.put(selectedFile);
-//                 fileURL = await fileRef.getDownloadURL();
-//                 console.log('Arquivo enviado com sucesso! URL:', fileURL);
-//             }
-
-//             // Aqui está salvando as informações do usuário no Firestore.
-//             await db.collection('users').doc(authUser.user.uid).set({
-//                 email: authUser.user.email,
-//                 fileURL,
-//             });
-
-//         } catch (error) {
-//             toast.error('Erro ao criar uma conta: ' + error.message);
-//         }
-//     }
-
-
-//     const logar = async (e) => {
-//         e.preventDefault();
-
-//         let email = document.getElementById("email-login").value;
-//         let password = document.getElementById("password-login").value;
-
-//         try {
-//             const authResult = await auth.signInWithEmailAndPassword(email, password);
-//             const userDoc = await db.collection('users').doc(authResult.user.uid).get();
-
-//             if (userDoc.exists && userDoc.data().banned) {
-//                 toast.error('Sua conta foi banida. Fale com algum ADM.');
-//                 await auth.signOut();
-//                 return;
-//             }
-
-//             props.setUser(authResult.user.displayName);
-//             toast.success('Logado com Sucesso!');
-//             navigate('/home');
-//         } catch (error) {
-//             toast.error('Erro ao logar: ' + error.message);
-//         }
-//     }
-
-
-//     const enviarEmailRedefinicaoSenha = (e) => {
-//         e.preventDefault();
-
-//         auth.sendPasswordResetEmail(resetEmail)
-//             .then(() => {
-//                 toast.success('E-mail de redefinição de senha enviado!');
-//                 setShowResetPassword(false);
-//             })
-//             .catch((error) => toast.error('Erro ao enviar e-mail de redefinição de senha: ' + error.message));
-//     }
-
-//     return (
-//         <div className="App">
-//             <div className="main">
-//                 {containerLogar ?
-//                     <div className="main-container-login">
-//                         <h1 style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-//                             <img src={IconSoloMeetTEA} width={40} style={{ margin: '0 10px' }} />MEET TEA <img style={{ margin: '0 10px' }} src={IconSoloMeetTEA} width={40} />
-//                         </h1>
-//                         <input type="email" placeholder="User@gmail.com" id="email-login" />
-//                         <input type="password" id="password-login" placeholder="Senha" />
-//                         <button onClick={(e) => logar(e)}>Iniciar Sessão</button>
-//                         <p onClick={() => setShowResetPassword(true)} style={{ cursor: 'pointer', color: 'blue' }}>Esqueci a senha</p>
-//                         <p>Não tem uma Conta? <span onClick={() => setContainerLogar(!containerLogar)}>Registrar-se</span></p>
-//                     </div>
-//                     :
-//                     <div className="main-container-registro">
-//                         <h1 style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-//                             <img src={IconSoloMeetTEA} width={40} style={{ margin: '0 10px' }} />MEET TEA <img src={IconSoloMeetTEA} width={40} style={{ margin: '0 10px' }} />
-//                         </h1>
-//                         <input type="email" placeholder="User@gmail.com" id="email-cadastro" />
-//                         <input type="password" id="password-cadastro" placeholder="Senha" />
-//                         <input type="text" id="userName-cadastro" placeholder="Nome de usuário" />
-//                         <input type="file" id="file-cadastro" />
-//                         <div style={{ display: 'flex', alignItems: 'center' }}>
-//                             <input
-//                                 type="checkbox"
-//                                 id="aceitou-termos"
-//                                 checked={aceitouTermos}
-//                                 onChange={(e) => setAceitouTermos(e.target.checked)}
-//                             />
-//                             <label htmlFor="aceitou-termos">
-//                                 Ao submeter esse formulário, declaro que li e entendi que o tratamento de dados pessoais será realizado nos termos da Política de Privacidade do Meet TEA
-//                             </label>
-//                         </div>
-//                         <button onClick={(e) => criarConta(e)}>Registrar-se</button>
-//                         <p>Já tem uma Conta? <span onClick={() => setContainerLogar(!containerLogar)}>Logar-se</span></p>
-//                     </div>
-//                 }
-
-//                 {showResetPassword && (
-//                     <div className="reset-password-modal">
-//                         <div className="reset-password-content">
-//                             <h2>Redefinir Senha</h2>
-//                             <input
-//                                 type="email"
-//                                 placeholder="Digite seu e-mail"
-//                                 value={resetEmail}
-//                                 onChange={(e) => setResetEmail(e.target.value)}
-//                             />
-//                             <button onClick={(e) => enviarEmailRedefinicaoSenha(e)}>Enviar E-mail de Redefinição</button>
-//                             <button onClick={() => setShowResetPassword(false)}>Fechar</button>
-//                         </div>
-//                     </div>
-//                 )}
-//             </div>
-//             <ToastContainer />
-//         </div>
-//     )
-// }
-
-// export default LoginRegistro;
